@@ -1,20 +1,18 @@
-package errors_test
+package errors
 
 import (
 	"fmt"
-
-	"github.com/pkg/errors"
 )
 
 func ExampleNew() {
-	err := errors.New("whoops")
+	err := New("whoops")
 	fmt.Println(err)
 
 	// Output: whoops
 }
 
 func ExampleNew_printf() {
-	err := errors.New("whoops")
+	err := New("whoops")
 	fmt.Printf("%+v", err)
 
 	// Example output:
@@ -36,24 +34,24 @@ func ExampleNew_printf() {
 }
 
 func ExampleWithMessage() {
-	cause := errors.New("whoops")
-	err := errors.WithMessage(cause, "oh noes")
+	cause := New("whoops")
+	err := WithMessage(cause, "oh noes")
 	fmt.Println(err)
 
 	// Output: oh noes: whoops
 }
 
 func ExampleWithStack() {
-	cause := errors.New("whoops")
-	err := errors.WithStack(cause)
+	cause := New("whoops")
+	err := WithStack(cause)
 	fmt.Println(err)
 
 	// Output: whoops
 }
 
 func ExampleWithStack_printf() {
-	cause := errors.New("whoops")
-	err := errors.WithStack(cause)
+	cause := New("whoops")
+	err := WithStack(cause)
 	fmt.Printf("%+v", err)
 
 	// Example Output:
@@ -89,24 +87,24 @@ func ExampleWithStack_printf() {
 }
 
 func ExampleWrap() {
-	cause := errors.New("whoops")
-	err := errors.Wrap(cause, "oh noes")
+	cause := New("whoops")
+	err := Wrap(cause, "oh noes")
 	fmt.Println(err)
 
 	// Output: oh noes: whoops
 }
 
 func fn() error {
-	e1 := errors.New("error")
-	e2 := errors.Wrap(e1, "inner")
-	e3 := errors.Wrap(e2, "middle")
-	return errors.Wrap(e3, "outer")
+	e1 := New("error")
+	e2 := Wrap(e1, "inner")
+	e3 := Wrap(e2, "middle")
+	return Wrap(e3, "outer")
 }
 
 func ExampleCause() {
 	err := fn()
 	fmt.Println(err)
-	fmt.Println(errors.Cause(err))
+	fmt.Println(Cause(err))
 
 	// Output: outer: middle: inner: error
 	// error
@@ -143,15 +141,15 @@ func ExampleWrap_extended() {
 }
 
 func ExampleWrapf() {
-	cause := errors.New("whoops")
-	err := errors.Wrapf(cause, "oh noes #%d", 2)
+	cause := New("whoops")
+	err := Wrapf(cause, "oh noes #%d", 2)
 	fmt.Println(err)
 
 	// Output: oh noes #2: whoops
 }
 
 func ExampleErrorf_extended() {
-	err := errors.Errorf("whoops: %s", "foo")
+	err := Errorf("whoops: %s", "foo")
 	fmt.Printf("%+v", err)
 
 	// Example output:
@@ -174,10 +172,10 @@ func ExampleErrorf_extended() {
 
 func Example_stackTrace() {
 	type stackTracer interface {
-		StackTrace() errors.StackTrace
+		StackTrace() StackTrace
 	}
 
-	err, ok := errors.Cause(fn()).(stackTracer)
+	err, ok := Cause(fn()).(stackTracer)
 	if !ok {
 		panic("oops, err does not implement stackTracer")
 	}
@@ -193,9 +191,9 @@ func Example_stackTrace() {
 }
 
 func ExampleCause_printf() {
-	err := errors.Wrap(func() error {
+	err := Wrap(func() error {
 		return func() error {
-			return errors.New("hello world")
+			return New("hello world")
 		}()
 	}(), "failed")
 
